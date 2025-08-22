@@ -1,0 +1,7 @@
+FROM node:20 as build
+WORKDIR /app
+COPY corvi_frontend /app
+RUN npm install && npm run build
+
+FROM nginx:1.25
+COPY --from=build /app/dist /usr/share/nginx/html
