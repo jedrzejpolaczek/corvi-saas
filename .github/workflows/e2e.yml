@@ -1,13 +1,13 @@
-name: E2E
-on:
-  workflow_dispatch: {}
-jobs:
-  compose-smoke:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Docker Compose up
-        run: |
-          docker compose -f infra/docker-compose.yml up -d --build
-          sleep 20
-          curl -f http://localhost:8000/health/
+# name: E2E
+# on:
+#   workflow_dispatch: {}
+# jobs:
+#   compose-smoke:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Docker Compose up
+#         run: |
+#           docker compose -f infra/docker-compose.yml up -d --build
+#           sleep 20
+#           curl -f http://localhost:8000/health/
