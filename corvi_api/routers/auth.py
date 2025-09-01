@@ -13,18 +13,22 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email==req.email).first():
         raise HTTPException(400, detail="Email already registered")
 
-    org = Org(name=req.org_name)
-    db.add(org)
-    db.flush()
+    try:
+        org = Org(name=req.org_name)
+        db.add(org)
+        db.flush()
 
-    user = User(email=req.email, hashed_password=get_password_hash(req.password), default_org_id=org.id)
-    db.add(user)
-    db.flush()  # We need it to generate user ID first
+        user = User(email=req.email, hashed_password=get_password_hash(req.password), default_org_id=org.id)
+        db.add(user)
+        db.flush()  # We need it to generate user ID first
 
-    db.add(Membership(user_id=user.id, org_id=org.id, role=RoleEnum.owner))
-    db.add(Subscription(org_id=org.id, tier=SubscriptionTierEnum.freemium))
-    db.add(UsageQuota(org_id=org.id, key="experiments_per_month", limit=10, used=0))
-    db.commit()
+        db.add(Membership(user_id=user.id, org_id=org.id, role=RoleEnum.owner))
+        db.add(Subscription(org_id=org.id, tier=SubscriptionTierEnum.freemium))
+        db.add(UsageQuota(org_id=org.id, key="experiments_per_month", limit=10, used=0))
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(500, detail="Registration failed. Please try again.")
 
     access = create_token(str(user.id), 30, "access")
     refresh = create_token(str(user.id), 60*24*7, "refresh")
