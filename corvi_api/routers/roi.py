@@ -13,14 +13,18 @@ def put_formula(id: int, formula: str, baseline: float, business_factor: float, 
     if not row:
         row = ROIFormula(project_id=id)
         db.add(row)
-    row.formula = formula; row.baseline = baseline; row.business_factor = business_factor
-    db.commit(); return {"ok": True}
+    row.formula = formula
+    row.baseline = baseline
+    row.business_factor = business_factor
+    db.commit()
+    return {"ok": True}
 
 @router.get("/{id}/roi_report", dependencies=[Depends(enforce_feature(Feature.KPI_ROI))])
 def get_report(id: int, metric: float, db: Session = Depends(get_db), user=Depends(get_current_user)):
     row = db.query(ROIFormula).filter(ROIFormula.project_id==id).first()
     if not row:
         row = ROIFormula(project_id=id)
-        db.add(row); db.commit()
+        db.add(row)
+        db.commit()
     result = (metric - row.baseline) * row.business_factor
     return {"formula": row.formula, "result": result}
