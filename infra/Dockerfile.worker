@@ -2,23 +2,25 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# (warto spiąć wersję dla powtarzalności)
-RUN pip install --no-cache-dir "poetry==2.1.4" \
- && poetry config virtualenvs.create false
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# 1) same manifesty (cache)
-COPY corvi_api/pyproject.toml     /app/corvi_api/pyproject.toml
-COPY corvi_api/poetry.lock        /app/corvi_api/poetry.lock
-COPY corvi_worker/pyproject.toml  /app/corvi_worker/pyproject.toml
-COPY corvi_worker/poetry.lock     /app/corvi_worker/poetry.lock
+# Install Poetry
+RUN pip install --no-cache-dir poetry
 
-# 2) zainstaluj TYLKO zależności (bez bieżącego projektu)
-RUN cd /app/corvi_api    && poetry install --no-interaction --no-ansi --no-root \
- && cd /app/corvi_worker && poetry install --no-interaction --no-ansi --no-root
+# Copy Poetry files
+COPY corvi_worker/pyproject.toml corvi_worker/poetry.lock* ./
 
-# 3) dopiero teraz kod
-COPY corvi_api     /app/corvi_api
-COPY corvi_worker  /app/corvi_worker
+# Configure Poetry
+RUN poetry config virtualenvs.create false
 
-ENV PYTHONPATH=/app
-CMD ["python", "-m", "corvi_worker.runner"]
+# Install dependencies
+RUN poetry install --no-interaction --no-ansi --only=main
+
+# Copy application code
+COPY corvi_worker/ ./
+
+CMD ["python", "-m", "runner"]

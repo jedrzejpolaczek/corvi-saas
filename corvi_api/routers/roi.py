@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from ..db import get_db
-from ..security import get_current_user
-from ..models.roi import ROIFormula
-from ..feature_gating import enforce_feature, Feature
+from db import get_db
+from security import get_current_user
+from models.roi import ROIFormula
+from feature_gating import enforce_feature, Feature
 
 router = APIRouter(prefix="/projects", tags=["roi"]) 
 

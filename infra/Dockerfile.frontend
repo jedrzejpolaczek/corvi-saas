@@ -1,7 +1,29 @@
 FROM node:20 as build
 WORKDIR /app
-COPY corvi_frontend /app
-RUN npm install && npm run build
 
+# Copy package files first for better caching
+COPY ../corvi_frontend/package.json ./
+COPY ../corvi_frontend/package-lock.json* ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY ../corvi_frontend/src ./src
+COPY ../corvi_frontend/public ./public
+COPY ../corvi_frontend/index.html ./
+COPY ../corvi_frontend/vite.config.ts ./
+COPY ../corvi_frontend/tsconfig.json ./
+COPY ../corvi_frontend/tsconfig.node.json ./
+COPY ../corvi_frontend/tailwind.config.cjs ./
+COPY ../corvi_frontend/postcss.config.cjs ./
+
+# Build the application
+RUN npm run build
+
+# Production stage
 FROM nginx:1.25
 COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

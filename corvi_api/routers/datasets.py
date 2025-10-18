@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 import pandas as pd, io
-from ..db import get_db
-from ..security import get_current_user
-from ..models.dataset import Dataset
-from ..s3 import put_object
+from db import get_db
+from security import get_current_user
+from models.dataset import Dataset
+from s3 import put_object
 
 router = APIRouter(prefix="/datasets", tags=["datasets"]) 
 

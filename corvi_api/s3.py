@@ -1,5 +1,5 @@
 import boto3
-from .config import settings
+from config import settings
 
 session = boto3.session.Session(
     aws_access_key_id=settings.S3_ACCESS_KEY,

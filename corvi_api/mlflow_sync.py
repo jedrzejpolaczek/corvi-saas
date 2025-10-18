@@ -1,5 +1,6 @@
 import mlflow
-from .config import settings
+from config import settings
+
 mlflow.set_tracking_uri(settings.MLFLOW_TRACKING_URI)
 
 def log_metric(run_name: str, key: str, value: float, step: int | None = None):

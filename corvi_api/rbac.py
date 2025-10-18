@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from .db import get_db
-from .models.user import Membership, RoleEnum
-from .security import get_current_user
+from db import get_db
+from models.user import Membership, RoleEnum
+from security import get_current_user
 
 def require_role(min_role: RoleEnum):
     def _checker(org_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):

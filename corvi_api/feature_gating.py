@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from .db import get_db
-from .security import get_current_user
-from .models.subscription import SubscriptionTierEnum, FeatureFlag, Subscription
+from db import get_db
+from security import get_current_user
+from models.subscription import SubscriptionTierEnum, FeatureFlag, Subscription
 
 class Feature:
     CORVI_OPT = "corvi_opt"

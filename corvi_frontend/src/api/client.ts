@@ -1,3 +1,19 @@
-import axios from "axios";
-export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "/api" });
-export function auth(token?: string){ if(token){ api.defaults.headers.common["Authorization"] = `Bearer ${token}`; } return api; }
+import axios from 'axios'
+
+export const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Add request interceptor to include auth token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+export default api
