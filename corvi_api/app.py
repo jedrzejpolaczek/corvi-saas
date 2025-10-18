@@ -12,14 +12,6 @@ app = FastAPI(title="Corvi API", version="1.0.0", root_path=settings.API_ROOT_PA
 
 @app.get("/")
 async def root():
-    return {"message": "Corvi API is running"}
-
-@app.get("/health")
-async def health():
-    return {"status": "healthy"}
-
-@app.get("/")
-async def root():
     return {"message": "Corvi API is running", "environment": settings.ENVIRONMENT if hasattr(settings, 'ENVIRONMENT') else "unknown"}
 
 @app.get("/health")

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Form, Request
+from fastapi import FastAPI, HTTPException, Depends, Form, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
@@ -113,3 +113,40 @@ async def get_experiments():
         {"id": 1, "name": "Demo Experiment", "project_id": 1},
         {"id": 2, "name": "Test Experiment", "project_id": 1}
     ]
+
+@app.post("/experiments")
+async def create_experiment(
+    dataset: UploadFile = File(...),
+    model: UploadFile = File(None),
+    predefined_model: str = Form(None),
+    settings: str = Form(...)
+):
+    """
+    Simple demo endpoint for creating experiments
+    """
+    import json
+    import random
+    
+    try:
+        # Parse settings
+        experiment_settings = json.loads(settings)
+        algorithm = experiment_settings.get('optimization_algorithm', 'random_search')
+        
+        # Generate a demo experiment ID
+        experiment_id = random.randint(1000, 9999)
+        
+        # Create demo response
+        return {
+            "experiment_id": experiment_id,
+            "status": "queued",
+            "message": "Experiment started successfully",
+            "algorithm": algorithm,
+            "dataset_filename": dataset.filename if dataset else "unknown",
+            "model_filename": model.filename if model else None,
+            "predefined_model": predefined_model
+        }
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid settings JSON")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create experiment: {str(e)}")

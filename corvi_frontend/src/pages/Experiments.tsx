@@ -66,6 +66,12 @@ export default function Experiments() {
   };
 
   const handleStartOptimization = async () => {
+    console.log('🚀 Starting optimization...');
+    console.log('Dataset:', config.dataset?.name);
+    console.log('Custom Model:', config.customModel?.name);
+    console.log('Predefined Model:', config.predefinedModel);
+    console.log('Settings:', config.advancedSettings);
+    
     if (!config.dataset || (!config.customModel && !config.predefinedModel)) {
       alert('Please select a dataset and a model before starting optimization.');
       return;
@@ -78,15 +84,21 @@ export default function Experiments() {
       else formData.append('predefined_model', config.predefinedModel);
       formData.append('settings', JSON.stringify(config.advancedSettings));
 
+      console.log('📤 Sending request to /api/experiments');
       const response = await fetch('/api/experiments', {
         method: 'POST',
-        body: formData,
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        body: formData
       });
 
-      if (!response.ok) throw new Error('Failed to start optimization');
+      console.log('📨 Response status:', response.status);
+      const responseText = await response.text();
+      console.log('📨 Response text:', responseText);
 
-      const result = await response.json();
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${responseText}`);
+
+      const result = JSON.parse(responseText);
+      console.log('✅ Success:', result);
+      
       const newExperiment: Experiment = {
         id: result.experiment_id,
         name: `Experiment ${Date.now()}`,
@@ -96,9 +108,11 @@ export default function Experiments() {
         runtime: '0m'
       };
       setExperiments(prev => [newExperiment, ...prev]);
+      alert('Experiment started successfully!');
     } catch (e) {
-      console.error(e);
-      alert('Failed to start optimization. Please try again.');
+      console.error('❌ Error:', e);
+      alert(`Failed to start optimization: ${e}`);
+    } finally {
       setIsOptimizing(false);
     }
   };

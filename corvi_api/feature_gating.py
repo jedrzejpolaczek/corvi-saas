@@ -26,7 +26,7 @@ def enforce_feature(feature_key: str):
     return _checker
 
 def enforce_quota(quota_key: str):
-    from .models.subscription import UsageQuota
+    from models.subscription import UsageQuota
     def _checker(db: Session = Depends(get_db), user=Depends(get_current_user)):
         q = db.query(UsageQuota).filter(UsageQuota.org_id==user.default_org_id, UsageQuota.key==quota_key).first()
         if q and q.used >= q.limit:
