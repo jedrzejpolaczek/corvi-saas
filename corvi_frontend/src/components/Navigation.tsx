@@ -12,7 +12,7 @@ export default function Navigation({ user, onLogout }: NavigationProps) {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold text-green-600">Corvi</h1>
+              <img src="/corvi-logo.png" alt="Corvi" className="h-8 w-auto" />
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <a

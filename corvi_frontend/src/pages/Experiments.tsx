@@ -477,7 +477,7 @@ if __name__ == "__main__":
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-blue-600">Corvi</h1>
+              <img src="/corvi-logo.png" alt="Corvi" className="h-8 w-auto" />
               <nav className="hidden md:flex space-x-6">
                 <a href="#" className="text-gray-600 hover:text-gray-900">Dashboard</a>
                 <a href="#" className="text-blue-600 font-medium border-b-2 border-blue-600">Experiments</a>
