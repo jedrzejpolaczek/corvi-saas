@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "corvi_worker"
+version = "0.1.0"
+description = "Corvi worker service"
+authors = ["Aviarium Software"]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+sqlalchemy = "^2.0.30"
+psycopg2-binary = "^2.9.9"
+pika = "^1.3.2"
+redis = "^5.0.4"
+pydantic-settings = "^2.0.3"
+corvi_api = {path = "../corvi_api", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+
+[tool.poetry.scripts]
+corvi-worker = "corvi_worker.runner:main"

@@ -1,0 +1,41 @@
+# name: CI
+# on: [push, pull_request]
+# jobs:
+#   backend:
+#     runs-on: ubuntu-latest
+#     services:
+#       postgres:
+#         image: postgres:15
+#         env:
+#           POSTGRES_USER: corvi
+#           POSTGRES_PASSWORD: corvi
+#           POSTGRES_DB: corvi
+#         ports: ["5432:5432"]
+#         options: >-
+#           --health-cmd "pg_isready -U corvi" --health-interval 10s --health-timeout 5s --health-retries 5
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-python@v5
+#         with: { python-version: '3.11' }
+#       - name: Install API
+#         run: |
+#           pip install poetry
+#           cd corvi_api && poetry config virtualenvs.create false && poetry install --no-ansi
+#       - name: Alembic
+#         run: |
+#           cd corvi_api && alembic upgrade head
+#       - name: Run tests
+#         run: |
+#           pip install pytest
+#           pytest -q
+#   frontend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with: { node-version: 20 }
+#       - name: Build frontend
+#         run: |
+#           cd corvi_frontend
+#           npm i
+#           npm run build

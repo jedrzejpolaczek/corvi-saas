@@ -1,0 +1,53 @@
+# FROM python:3.11-slim
+
+# WORKDIR /app
+
+# COPY corvi_api/pyproject.toml /app/corvi_api/pyproject.toml
+# RUN pip install --no-cache-dir poetry \
+#  && cd corvi_api \
+#  && poetry config virtualenvs.create false \
+#  && poetry install --no-interaction --no-ansi
+
+# COPY corvi_api /app/corvi_api
+
+# ENV PYTHONPATH=/app
+
+# RUN alembic -c corvi_api/alembic.ini upgrade head
+# CMD ["uvicorn", "corvi_api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    POETRY_VIRTUALENVS_CREATE=false
+
+WORKDIR /app
+
+# (opcjonalnie) systemowe zależności, jeśli kiedyś będą potrzebne do buildów
+# RUN apt-get update && apt-get install -y --no-install-recommends build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
+
+# 1) Kopiujemy tylko pliki zależności
+COPY corvi_api/pyproject.toml /app/corvi_api/pyproject.toml
+# jeżeli istnieje:
+COPY corvi_api/poetry.lock /app/corvi_api/poetry.lock
+
+# 2) Instalujemy zależności (bez instalacji projektu)
+RUN pip install --no-cache-dir "poetry==2.1.4" \
+ && cd /app/corvi_api \
+ && poetry install --no-interaction --no-ansi --no-root
+
+# 3) Dopiero teraz kopiujemy cały kod
+COPY corvi_api /app/corvi_api
+
+# 4) (opcjonalnie) jeśli chcesz mieć projekt zainstalowany jako pakiet:
+# RUN cd /app/corvi_api && poetry install --no-interaction --no-ansi
+
+# 5) Nie rób migracji w czasie builda – przenieś to do entrypointa
+# (tu tylko przykład – jeśli potrzebujesz)
+COPY infra/docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+# RUN alembic -c corvi_api/alembic.ini upgrade head
+
+# CMD ["uvicorn", "corvi_api.app:app", "--host", "0.0.0.0", "--port", "8000"]
