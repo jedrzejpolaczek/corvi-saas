@@ -90,7 +90,7 @@ export default function AdvancedSettings({ isOpen, onClose, onSave }: AdvancedSe
             <select
               value={settings.optimization_algorithm}
               onChange={(e) => handleInputChange('optimization_algorithm', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white hover:border-green-400"
             >
               {optimizationAlgorithms.map(alg => (
                 <option key={alg.value} value={alg.value}>{alg.label}</option>
@@ -181,7 +181,7 @@ export default function AdvancedSettings({ isOpen, onClose, onSave }: AdvancedSe
             <select
               value={settings.scoring_metric}
               onChange={(e) => handleInputChange('scoring_metric', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white hover:border-green-400"
             >
               {scoringMetrics.map(metric => (
                 <option key={metric.value} value={metric.value}>{metric.label}</option>

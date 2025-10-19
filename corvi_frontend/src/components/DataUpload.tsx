@@ -230,7 +230,7 @@ export default function DataUpload({
         <select
           value={selectedPredefined}
           onChange={handlePredefinedChange}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+          className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white text-gray-900 hover:border-green-400"
         >
           {predefinedModels.map((model) => (
             <option key={model.value} value={model.value}>

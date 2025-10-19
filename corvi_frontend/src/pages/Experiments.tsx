@@ -33,6 +33,7 @@ interface Experiment {
   progress: number;
   created: string;
   runtime: string;
+  startTime?: number; // Unix timestamp when experiment started
   accuracy?: number;
   results?: OptimizationResults;
 }
@@ -127,7 +128,8 @@ export default function Experiments() {
         status: 'Running',
         progress: 0,
         created: new Date().toISOString().split('T')[0],
-        runtime: '0m'
+        runtime: '0m',
+        startTime: Date.now() // Store start time as Unix timestamp
       };
       
       console.log('🆕 Adding new experiment to list:', newExperiment);
@@ -141,7 +143,7 @@ export default function Experiments() {
       
       // Start mock progress simulation
       console.log('🏃 Starting progress simulation for experiment:', result.experiment_id);
-      simulateProgress(result.experiment_id.toString());
+      simulateProgress(result.experiment_id.toString(), newExperiment.startTime!);
     } catch (e) {
       console.error('❌ Error:', e);
       alert(`Failed to start optimization: ${e}`);
@@ -377,16 +379,17 @@ if __name__ == "__main__":
     return params;
   };
 
-  const simulateProgress = (experimentId: string) => {
-    console.log('🎯 Setting up progress simulation for experiment:', experimentId);
+  const simulateProgress = (experimentId: string, startTime: number = Date.now()) => {
+    console.log('🎯 Setting up progress simulation for experiment:', experimentId, 'started at:', new Date(startTime).toLocaleTimeString());
     let progress = 0;
-    let runtime = 0;
     
     const updateProgress = () => {
       progress += Math.random() * 15 + 5; // Random progress between 5-20%
-      runtime += Math.floor(Math.random() * 30) + 10; // Add 10-40 seconds
       
-      console.log(`📊 Updating experiment ${experimentId}: ${Math.floor(progress)}% progress, ${runtime}s runtime`);
+      // Calculate actual elapsed time from experiment start
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      
+      console.log(`📊 Updating experiment ${experimentId}: ${Math.floor(progress)}% progress, ${elapsedSeconds}s runtime`);
       
       if (progress >= 100) {
         progress = 100;
@@ -419,7 +422,7 @@ if __name__ == "__main__":
                 ...exp, 
                 progress: 100, 
                 status: 'Completed' as const, 
-                runtime: `${Math.floor(runtime / 60)}m ${runtime % 60}s`,
+                runtime: `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`,
                 accuracy: finalAccuracy,
                 results: optimizationResults
               }
@@ -433,7 +436,7 @@ if __name__ == "__main__":
           ? { 
               ...exp, 
               progress: Math.floor(progress), 
-              runtime: `${Math.floor(runtime / 60)}m ${runtime % 60}s`
+              runtime: `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`
             }
           : exp
       ));
@@ -479,11 +482,11 @@ if __name__ == "__main__":
             <div className="flex items-center space-x-8">
               <img src="/corvi-logo.png" alt="Corvi" className="h-8 w-auto" />
               <nav className="hidden md:flex space-x-6">
-                <a href="#" className="text-gray-600 hover:text-gray-900">Dashboard</a>
+                <a href="#" className="text-gray-400 hover:text-gray-500 cursor-not-allowed opacity-60" title="Coming Soon">Dashboard</a>
                 <a href="#" className="text-blue-600 font-medium border-b-2 border-blue-600">Experiments</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Models</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Datasets</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Analytics</a>
+                <a href="#" className="text-gray-400 hover:text-gray-500 cursor-not-allowed opacity-60" title="Coming Soon">Models</a>
+                <a href="#" className="text-gray-400 hover:text-gray-500 cursor-not-allowed opacity-60" title="Coming Soon">Datasets</a>
+                <a href="#" className="text-gray-400 hover:text-gray-500 cursor-not-allowed opacity-60" title="Coming Soon">Analytics</a>
               </nav>
             </div>
             <div className="flex items-center space-x-4">
@@ -596,7 +599,7 @@ if __name__ == "__main__":
                   <p className="text-gray-500 text-center mb-2">Or choose from list:</p>
                   <div className="relative">
                     <select 
-                      className="block w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
+                      className="block w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 bg-white hover:border-green-400"
                       value={config.predefinedModel}
                       onChange={(e) => handlePredefinedModelChange(e.target.value)}
                     >
